@@ -1,0 +1,15 @@
+---
+title: "Philly graph"
+output: html_notebook
+---
+
+```{r Philly graph}
+
+philly_incidents %>%
+  ggplot(aes(x = decile_rank, y = num_complaints_in_this_decile / sum(num_complaints_in_this_decile))) +
+  geom_bar(stat = "identity", aes(color = decile_rank == 10, fill = decile_rank == 10)) +
+  theme(legend.position = "none") +
+  scale_x_continuous("Decile Rank", breaks = pretty_breaks(10)) +
+  scale_y_continuous("% of Complaints", labels = percent, limits = c(0, 0.3))
+
+```
