@@ -12,6 +12,7 @@
 
 # set a relative path for the complaints data
 # (use data/ directory)
+mkdir data
 DATA_DIR=data/
 
 # change to the data directory
