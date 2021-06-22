@@ -21,4 +21,4 @@ cd $DATA_DIR
 # alternatively you canuse wget if you don't have curl
 # wget $url
 url=https://raw.githubusercontent.com/new-york-civil-liberties-union/NYPD-Misconduct-Complaint-Database-Updated/main/CCRB%20Complaint%20Database%20Raw%2004.20.2021.csv
-curl -O $url
+curl -o nyc_incidents.csv $url
