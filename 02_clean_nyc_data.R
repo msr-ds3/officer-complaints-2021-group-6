@@ -1,21 +1,13 @@
----
-title: "Clean NYC Data"
-output: html_notebook
----
 
-```{r setup}
-
+# setup
 library(tidyverse)
 library(lubridate)
 library(scales)
 theme_set(theme_bw())
 
-```
-
-```{r read and clean NYC data}
-
-nyc_incidents <- read_csv('nyc_incidents.csv')
-View(nyc_incidents)
+# read in nyc data
+nyc_incidents <- read_csv('data/nyc_incidents.csv')
+# View(nyc_incidents)
 
 # remove incidents not 2007-2017
 nyc_incidents <- nyc_incidents %>%
@@ -38,5 +30,11 @@ nyc_incidents <- nyc_incidents %>%
   group_by(OfficerID) %>%
   summarize(num_complaints = n())
 
-```
+# divide officers into deciles based on number of complaints
+nyc_incidents <- nyc_incidents %>%
+  mutate(decile_rank = ntile(nyc_incidents$num_complaints, 10))
 
+# count the number of complaints in each decile
+nyc_incidents <- nyc_incidents %>%
+  group_by(decile_rank) %>%
+  summarize(num_complaints_in_this_decile = sum(num_complaints))
