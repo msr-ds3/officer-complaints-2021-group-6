@@ -4,13 +4,15 @@ library(scales)
 theme_set(theme_bw())
 
 chicago_accused <- read_csv('data/complaints-accused_2000-2018_2018-03.csv')
-chicago_complaints <- read_csv('data/complaints-complaints_2000-2018_2018-03.csv')
-chicago_officers <- read_csv('data/complaints-accused.csv')
+#chicago_complaints <- read_csv('data/complaints-complaints_2000-2018_2018-03.csv')
+#chicago_officers <- read_csv('data/complaints-accused.csv')
 
-chicago_victims <- read_csv('data/complaints-victims_2000-2018_2018-03.csv')
+#chicago_victims <- read_csv('data/complaints-victims_2000-2018_2018-03.csv')
 
 all_complaints <- read_csv('data/complaints-complaints.csv') %>%
   drop_na(closed_date)
+
+officer_filed <- read_csv('data/officer-filed-complaints__2017-09.csv')
   
 
 
