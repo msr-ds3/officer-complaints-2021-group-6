@@ -6,7 +6,7 @@ output:
     df_print: paged
 ---
 
-The purpose of this project was to analyze the correlation between the sex and complaints against police officers. Analysis was done to compare the association between the sex of the complainant, the sex of the offending officer, and whether complaints by people of one sex were more likely to have their complaints sustained than people of the other sex. A sustained finding occurs when the police department decides that there is enough evidence to support a complaint. Analysis was also done to determine whether there was a correlation between the sex of the offending officer and whether a complaint was sustained.  
+The purpose of this project was to analyze the correlation between the sex and complaints against Philadelphia police officers. Analysis was done to compare the association between the sex of the complainant, the sex of the offending officer, and whether complaints by people of one sex were more likely to have their complaints sustained than people of the other sex. A sustained finding occurs when the police department decides that there is enough evidence to support a complaint. Analysis was also done to determine whether there was a correlation between the sex of the offending officer and whether a complaint was sustained.  
 
 All data used in this project was taken from OpenDataPhilly which contains data on complaints against police from the past five years (1/19/2016 - 3/31/21).
 
