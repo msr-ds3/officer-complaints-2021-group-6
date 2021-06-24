@@ -98,7 +98,7 @@ nyc_incidents_by_impacted_males <- nyc_incidents_by_impacted_gender %>%
 # bar chart
 nyc_incidents_by_impacted_males %>%
   ggplot(aes(x = Outcome, y = proportion_of_impacted_males)) +
-  geom_bar(stat = "identity", fill = c("red", "green")) +
+  geom_bar(stat = "identity", fill = c("green", "red")) +
   # label each bar with the percentage
   geom_text(aes(label = percent(proportion_of_impacted_males)), position = position_stack(vjust = 1.1)) +
   # label y axis and set the y axis labels to be percents
@@ -122,7 +122,7 @@ nyc_incidents_by_impacted_females <- nyc_incidents_by_impacted_gender %>%
 # bar chart
 nyc_incidents_by_impacted_females %>%
   ggplot(aes(x = Outcome, y = proportion_of_impacted_females)) +
-  geom_bar(stat = "identity", fill = c("red", "green")) +
+  geom_bar(stat = "identity", fill = c("green", "red")) +
   # label each bar with the percentage
   geom_text(aes(label = percent(proportion_of_impacted_females)), position = position_stack(vjust = 1.1)) +
   # label y axis and set the y axis labels to be percents
