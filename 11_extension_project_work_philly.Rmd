@@ -84,7 +84,7 @@ philly_findings_and_demographics_from_open_data_philly_male <-
 # bar chart
 philly_findings_and_demographics_from_open_data_philly_male %>%
   ggplot(aes(x = investigative_findings, y = proportion)) +
-  geom_bar(stat = "identity") +
+  geom_bar(stat = "identity", fill = c("red", "green")) +
   # label each bar with the percentage
   geom_text(aes(label = percent(proportion)), position = position_stack(vjust = 1.1)) +
   # set the y axis labels to be percents
@@ -109,7 +109,7 @@ philly_findings_and_demographics_from_open_data_philly_female <-
 # bar chart
 philly_findings_and_demographics_from_open_data_philly_female %>%
   ggplot(aes(x = investigative_findings, y = proportion)) +
-  geom_bar(stat = "identity") +
+  geom_bar(stat = "identity", fill = c("red", "green")) +
   # label each bar with the percentage
   geom_text(aes(label = percent(proportion)), position = position_stack(vjust = 1.1)) +
   # set the y axis labels to be percents
