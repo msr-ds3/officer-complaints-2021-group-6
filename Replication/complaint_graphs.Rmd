@@ -1,0 +1,78 @@
+---
+title: "Complaints Against Police In Different Cities"
+author: "Adina Scheinfeld & Sambhav Shrestha"
+date: "06/24/2021"
+output: html_document
+---
+
+***
+## Introduction
+We decided to replicate the data from the [article](https://github.com/msr-ds3/coursework/blob/master/week4/ft_police_complaints.pdf) on complaints filed against police officers in NYC, Chicago, and Philadelphia. All the data were taken from the links inside the article and wrangled and cleaned in 3 different R scripts for each cities as shown below.All the scripts for data wrangling can be found in the github. After, we plotted each graph for 3 cities and compared with the article.
+
+```{r}
+source('data_wrangling/02_clean_nyc_data.R')
+source('data_wrangling/05_clean_chicago_data.R')
+source('data_wrangling/08_clean_philly_data.R')
+```
+
+
+
+### New York City
+```{r NYC graph}
+
+nyc_incidents %>%
+  ggplot(aes(x = decile_rank, y = num_complaints_in_this_decile / sum(num_complaints_in_this_decile))) +
+  geom_bar(stat = "identity", aes(fill = decile_rank == 10)) +
+  theme(legend.position = "none") +
+  scale_x_continuous("Decile Rank", breaks = pretty_breaks(10)) +
+  scale_y_continuous("% of Complaints", labels = percent) +
+  labs(title = "NYC Complaints")
+
+```
+
+
+### Chicago 
+```{r Chigago graph}
+# plot the output
+chicago_incidents %>%
+  ggplot(aes(x = decile_rank, y = total_complaints/sum(total_complaints))) +
+  geom_bar(stat = 'identity', aes(fill = decile_rank == 10)) +
+  scale_y_continuous("% of complaints", labels = percent) +
+  scale_x_continuous("Decile Rank", breaks = 1:10) +
+  theme(legend.position = "none") +
+  labs(title = "Chicago Complaints")
+```
+
+
+
+### Philadelphia 
+```{r Philly graph}
+
+philly_incidents %>%
+  ggplot(aes(x = decile_rank, y = num_complaints_in_this_decile / sum(num_complaints_in_this_decile))) +
+  geom_bar(stat = "identity", aes(color = decile_rank == 10, fill = decile_rank == 10)) +
+  theme(legend.position = "none") +
+  scale_x_continuous("Decile Rank", breaks = pretty_breaks(10)) +
+  scale_y_continuous("% of Complaints", labels = percent, limits = c(0, 0.3)) +
+  labs(title = "Philadelphia Complaints")
+
+```
+
+## Conclusion
+The graphs obtained from NYC and Philadelphia matched perfectly whereas the Chicago graph missed the mark by 3% error. As presented in the article, more than 30% of complaints seem to come from police officers in the top 10% group in each cities.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
