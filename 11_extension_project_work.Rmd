@@ -121,7 +121,7 @@ philly_findings_and_demographics_from_open_data_philly_female %>%
 
 ```
 
-Next, we analyzed the proportion of complaints filed by people of each gender with a sustained finding versus no sustained finding depending also on the sex of the offending officer. As indicated in the table and the graphs below, these percentages were very similar between the genders. 
+Next, we analyzed the proportion of complaints filed by people of each gender with a sustained finding versus no sustained finding depending also on the sex of the offending officer. As indicated in the table and the graphs below, these percentages were very similar between the genders. In other words, the sex of the offending officer did not seem to play a role in whether or not a finding was sustained regardlesss of whether a complaint was filed by a male or a female.
 
 ------          | No Sustained Findings  | Sustained Finding
 --------------- | :--------------------: | :---------------------
