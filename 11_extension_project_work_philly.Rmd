@@ -23,7 +23,7 @@ theme_set(theme_bw())
 # read in findings data from OpenDataPhilly
 philly_incidents_findings_from_open_data_philly <- 
   read_csv('data/philly_incidents_findings_from_open_data_philly.csv')
-#vView(philly_incidents_findings_from_open_data_philly)
+# View(philly_incidents_findings_from_open_data_philly)
 
 # read in demographics data from OpenDataPhilly
 philly_complainant_demographics_from_open_data_philly <- 
