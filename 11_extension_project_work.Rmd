@@ -6,7 +6,7 @@ output:
     df_print: paged
 ---
 
-The purpose of this project was to analyze the correlation between the sex and complaints against police officers. Analysis was done to compare the association between the sex of the complainant, the sex of the offending officer, and whether complaints by people of one sex were more likely to have their complaints sustained than people of the other sex. Analysis was also done to determine whether the sex of the officer being complained against had an effect on whether a complaint was sustained.  
+The purpose of this project was to analyze the correlation between the sex and complaints against police officers. Analysis was done to compare the association between the sex of the complainant, the sex of the offending officer, and whether complaints by people of one sex were more likely to have their complaints sustained than people of the other sex. A sustained finding occurs when the police department decides that there is enough evidence to support a complaint. Analysis was also done to determine whether there was a correlation between the sex of the offending officer and whether a complaint was sustained.  
 
 All data used in this project was taken from OpenDataPhilly which contains data on complaints against police from the past five years (1/19/2016 - 3/31/21).
 
@@ -54,7 +54,8 @@ philly_findings_and_demographics_from_open_data_philly <-
 
 ```
 
-First, we analyzed the percentage of complaints filed by males with a sustained finding versus the percentage of complaints filed by males with no sustained findings as compared with the percentage of complaints filed by females with a sustained finding versus the percentage of complaints filed by females with no sustained findings. As evident from the graphs below, these percentages were *nearly exactly the same* between the sexes. Therefore, the sex of the complainant does *not* seem to play a role in whether or not the findings of a complaint were sustained. 
+
+First, we analyzed the percentage of complaints filed by males with a sustained finding versus the percentage of complaints filed by males with no sustained findings as compared with the percentage of complaints filed by females with a sustained finding versus the percentage of complaints filed by females with no sustained findings. In other words, we analyzed the percentage of complaints that were sustained versus not sustained given that the complainant was a male, as compared with the percentage of complaints that were sustained versus not sustained given that the complainant was a female. As evident from the graphs below, these percentages were *nearly exactly the same* between the sexes. Therefore, the sex of the complainant does *not* seem to be correlated with whether or not the findings of a complaint were sustained. 
 
 ```{r sustained and not sustained by complainant sex}
 
@@ -121,7 +122,8 @@ philly_findings_and_demographics_from_open_data_philly_female %>%
 
 ```
 
-Next, we analyzed the proportion of complaints filed by people of each gender with a sustained finding versus no sustained finding depending also on the sex of the offending officer. As indicated in the table and the graphs below, these percentages were very similar between the genders. In other words, the sex of the offending officer did not seem to play a role in whether or not a finding was sustained regardlesss of whether a complaint was filed by a male or a female.
+
+Next, we analyzed the proportion of complaints filed by people of each gender with a sustained finding versus no sustained finding divided also by the sex of the offending officer. As indicated in the table and the graphs below, these percentages were very similar between the genders. In other words, the sex of the offending officer did not seem to be correlated with whether or not a finding was sustained regardless of whether the complainant was male or female.
 
 ------          | No Sustained Findings  | Sustained Finding
 --------------- | :--------------------: | :---------------------
@@ -203,7 +205,65 @@ female_complainant_and_po_sex %>% ggplot(aes(x = investigative_findings, y = pro
 ```
 
 
+Next, we analyzed the proportion of sustained findings filed by males as compared with the proportion of sustained findings filed by females. In other words, given that a complaint was sustained, what was the probability that the complainant was male versus female. As evident from the chart below, a complaint filed by a male seems to be more likely to be sustained than a complaint filed by a female. However, further analysis is required to determine if this finding is significant or if there is another factor, such as males filing a greater number of complaints than females, that may be the cause for this difference in proportion. 
 
+```{r sustained findings by sex}
+
+# find the proportion of sustained findings per sex
+philly_sustained_findings_per_sex <- philly_findings_and_demographics_from_open_data_philly %>%
+  group_by(complainant_sex) %>%
+  # keep only complaints with sustained findings
+  filter(investigative_findings == "Sustained Finding") %>%
+  # count the number of complaints with sustained findings per sex
+  summarize(num_complaints = n()) %>%
+  # calculate the proportion of sustained findings by each sex
+  mutate(proportion_of_sustained_findings = num_complaints / sum(num_complaints))
+# View(philly_sustained_findings_per_sex)
+
+# pie chart
+philly_sustained_findings_per_sex  %>% 
+  ggplot(aes(x = "", y = proportion_of_sustained_findings, fill = complainant_sex)) +
+  geom_bar(stat = "identity", width = 1, color = "white") +
+  coord_polar("y", start = 0) +
+  # label each segment in the chart
+  geom_text(aes(label = percent(proportion_of_sustained_findings)), position = position_stack(vjust = 0.6)) +
+  theme_void() +
+  # set the key
+  scale_fill_discrete("Complainant Sex",
+                      labels = c("Female", "Male")) +
+  # title the chart
+  ggtitle("Percent of Complaints with Sustained Findings by Complainant Sex")
+
+```
+
+Further analysis into percentage of all complaints which were filed by males as compared with the percentage of all complaints filed by females indicated that males are more likely to file complaints than females, so the discrepancy between the proportion of complaints that are sustained which are filed by males as compared with the proportion of complaints that are sustained which are filed by females may be due to the fact that males file more complaints than females. As evident from the pie chart below, the difference in proportion between the total number of complaints filed by males versus females is nearly identical to the difference in proportion between the number of sustained complaints filed by males versus females. 
+
+```{r proportion of total complaints filed by each sex}
+
+# find the proportion of sustained findings per sex
+philly_complaints_per_sex <- philly_findings_and_demographics_from_open_data_philly %>%
+  group_by(complainant_sex) %>%
+  # count the number of complaints with sustained findings per sex
+  summarize(num_complaints = n()) %>% 
+  # calculate the proportion of sustained findings by each sex
+  mutate(proportion_of_all_findings = num_complaints / sum(num_complaints))
+# View(philly_complaints_per_sex)
+
+# pie chart
+philly_complaints_per_sex  %>% 
+  ggplot(aes(x = "", y = proportion_of_all_findings, fill = complainant_sex)) +
+  geom_bar(stat = "identity", width = 1, color = "white") +
+  coord_polar("y", start = 0) +
+  # label each segment in the chart
+  geom_text(aes(label = percent(proportion_of_all_findings)), position = position_stack(vjust = 0.6)) +
+  theme_void() +
+  # set the key
+  scale_fill_discrete("Complainant Sex",
+                      labels = c("Female", "Male")) +
+  # title the chart
+  ggtitle("Percent of All Complaints by Complainant Sex")
+
+```
 
 
 
