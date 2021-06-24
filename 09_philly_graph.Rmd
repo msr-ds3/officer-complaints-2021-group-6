@@ -3,6 +3,11 @@ title: "Philly graph"
 output: html_notebook
 ---
 
+```{r}
+source('08_clean_philly_data.R')
+```
+
+
 ```{r Philly graph}
 
 philly_incidents %>%
