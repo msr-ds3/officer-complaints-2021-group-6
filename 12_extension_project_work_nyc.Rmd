@@ -71,7 +71,7 @@ nyc_incidents_with_specific_columns <- nyc_incidents_with_specific_columns %>%
 ```
 
 
-First, we analyzed the percentage of cases by impacted males for which action was taken versus the percentage of cases by impacted males for which no action was taken as compared with  the percentage of cases by impacted females for which action was taken versus the percentage of cases by impacted females for which no action was taken. In other words, we analyzed the percentage of cases for which action was taken versus the percentage of cases for which no action was taken, given that the impacted person was a male, as compared with the percentage of cases for which action was taken versus the percentage of cases for which no action was taken, given that the impacted person was a female. 
+First, we analyzed the percentage of cases by impacted males for which action was taken versus the percentage of cases by impacted males for which no action was taken as compared with  the percentage of cases by impacted females for which action was taken versus the percentage of cases by impacted females for which no action was taken. In other words, we analyzed the percentage of cases for which action was taken versus the percentage of cases for which no action was taken, given that the impacted person was a male, as compared with the percentage of cases for which action was taken versus the percentage of cases for which no action was taken, given that the impacted person was a female. Based on the graphs below, it seems that action was more likely to be taken for cases opened by females than for cases opened by males. Pearsons Chi-squared test was run to determine whether this difference was statistically significant. The result of the Chi-squared test was 0.0003701 which indicates, at a significance level of 0.05, that the gender of the impacted person and whether or not action was taken are not independent of each other. 
 
 ```{r action taken vs no action taken by gender}
 
@@ -117,7 +117,7 @@ nyc_incidents_by_impacted_males %>%
 nyc_incidents_by_impacted_females <- nyc_incidents_by_impacted_gender %>%
   filter(ImpactedGender == "Female") %>%
   mutate(proportion_of_impacted_females = num_in_this_category / sum(num_in_this_category))
-View(nyc_incidents_by_impacted_females)
+# View(nyc_incidents_by_impacted_females)
 
 # bar chart
 nyc_incidents_by_impacted_females %>%
@@ -135,8 +135,26 @@ nyc_incidents_by_impacted_females %>%
 
 ```
 
+```{r chi squared test}
 
-Next, we analyzed the proportion of cases for impacted people of each gender with action versus no action divided also by the gender of the offending officer. 
+# create dataframe with genders and outcomes
+nyc_incidents_with_counts_of_genders <- nyc_incidents_with_specific_columns %>% 
+  filter(ImpactedGender == "Male" | ImpactedGender == "Female")
+
+# make a table with genders and counts to indicate whether or not action was taken
+nyc_incidents_with_counts_of_genders_table <- 
+  table(nyc_incidents_with_counts_of_genders$ImpactedGender, nyc_incidents_with_counts_of_genders$Outcome)
+
+# nyc_incidents_with_counts_of_genders_table
+
+# run chi-squared test
+chisq.test(nyc_incidents_with_counts_of_genders_table)
+
+```
+
+
+
+Next, we analyzed the proportion of cases for impacted people of each gender with action versus no action divided also by the gender of the offending officer. Although there are slight differences between males and females, the differences do not appear to be statistically significant.
 
 ------          | Action Taken           | No Action Taken
 --------------- | :--------------------: | :---------------------
