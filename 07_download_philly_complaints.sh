@@ -35,3 +35,6 @@ curl -o philly_incidents_disciplines_from_sam_learner.csv $url4
 url5="https://phl.carto.com/api/v2/sql?q=SELECT+*+FROM+ppd_complainant_demographics&filename=ppd_complainant_demographics&format=csv&skipfields=cartodb_id,the_geom,the_geom_webmercator"
 curl -o philly_complainant_demographics_from_open_data_philly.csv $url5
 
+
+
+
