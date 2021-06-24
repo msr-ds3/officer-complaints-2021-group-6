@@ -23,7 +23,7 @@ theme_set(theme_bw())
 # read in findings data from OpenDataPhilly
 philly_incidents_findings_from_open_data_philly <- 
   read_csv('data/philly_incidents_findings_from_open_data_philly.csv')
-# View(philly_incidents_findings_from_open_data_philly)
+#vView(philly_incidents_findings_from_open_data_philly)
 
 # read in demographics data from OpenDataPhilly
 philly_complainant_demographics_from_open_data_philly <- 
@@ -240,12 +240,12 @@ Further analysis into percentage of all complaints which were filed by males as 
 
 ```{r proportion of total complaints filed by each sex}
 
-# find the proportion of sustained findings per sex
+# find the proportion of all complaints per sex
 philly_complaints_per_sex <- philly_findings_and_demographics_from_open_data_philly %>%
   group_by(complainant_sex) %>%
-  # count the number of complaints with sustained findings per sex
+  # count the number of all complaints per sex
   summarize(num_complaints = n()) %>% 
-  # calculate the proportion of sustained findings by each sex
+  # calculate the proportion of all complaints for each sex
   mutate(proportion_of_all_findings = num_complaints / sum(num_complaints))
 # View(philly_complaints_per_sex)
 
