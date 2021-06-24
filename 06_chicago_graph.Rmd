@@ -1,0 +1,23 @@
+---
+title: "Chicago graph"
+output: html_notebook
+---
+
+
+### Source cleaned chicago data
+```{r}
+source('02_clean_chicago_data.R')
+```
+
+
+### Plot The Bar Graph
+```{r NYC graph}
+# plot the output
+chicago_incidents %>%
+  ggplot(aes(x = decile_rank, y = total_complaints/sum(total_complaints))) +
+  geom_bar(stat = 'identity', aes(fill = decile_rank == 10)) +
+  scale_y_continuous("% of complaints", labels = percent) +
+  scale_x_continuous("Decile Rank", breaks = 1:10) +
+  theme(legend.position = "none") +
+  labs(title = "Chicago Complaints Data")
+```
