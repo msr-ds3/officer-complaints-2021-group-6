@@ -4,6 +4,8 @@ output:
   html_notebook: default
   html_document:
     df_print: paged
+editor_options: 
+  chunk_output_type: inline
 ---
 
 
@@ -16,39 +18,66 @@ The purpose of this project was to analyze the correlation between the sex and c
 
 All data used in this project was taken from OpenDataPhilly which contains data on complaints against police from the past five years (1/19/2016 - 3/31/21).
 
-```{r setup}
 
+```r
 library(tidyverse)
 library(lubridate)
 library(scales)
 theme_set(theme_bw())
-
 ```
 
-```{r read in data}
+
+```r
 # read in findings data from OpenDataPhilly
 philly_incidents_findings_from_open_data_philly <- 
   read_csv('data/philly_incidents_findings_from_open_data_philly.csv')
+```
+
+```
+## Error: 'data/philly_incidents_findings_from_open_data_philly.csv' does not exist in current working directory ('C:/Users/Sambhav Shrestha/Documents/DS3 Project/officer-complaints-2021-group-6/Police_Complaints_Extension').
+```
+
+```r
 # View(philly_incidents_findings_from_open_data_philly)
 
 # read in demographics data from OpenDataPhilly
 philly_complainant_demographics_from_open_data_philly <- 
   read_csv('data/philly_complainant_demographics_from_open_data_philly.csv')
-# View(philly_complainant_demographics_from_open_data_philly)
-
 ```
 
-```{r clean data}
+```
+## Error: 'data/philly_complainant_demographics_from_open_data_philly.csv' does not exist in current working directory ('C:/Users/Sambhav Shrestha/Documents/DS3 Project/officer-complaints-2021-group-6/Police_Complaints_Extension').
+```
 
+```r
+# View(philly_complainant_demographics_from_open_data_philly)
+```
+
+
+```r
 # select only needed columns from findings data
 philly_incidents_findings_from_open_data_philly <- philly_incidents_findings_from_open_data_philly %>%
   select(complaint_id, po_sex, investigative_findings)
+```
+
+```
+## Error in select(., complaint_id, po_sex, investigative_findings): object 'philly_incidents_findings_from_open_data_philly' not found
+```
+
+```r
 # View(philly_incidents_findings_from_open_data_philly)
 
 # select only needed columns from demographics data
 philly_complainant_demographics_from_open_data_philly <- 
   philly_complainant_demographics_from_open_data_philly %>%
   select(complaint_id, complainant_sex)
+```
+
+```
+## Error in select(., complaint_id, complainant_sex): object 'philly_complainant_demographics_from_open_data_philly' not found
+```
+
+```r
 # View(philly_complainant_demographics_from_open_data_philly)
 
 # join philly_incidents_findings_from_open_data_philly and philly_complainant_demographics_from_open_data_philly
@@ -56,15 +85,21 @@ philly_findings_and_demographics_from_open_data_philly <-
   inner_join(philly_incidents_findings_from_open_data_philly, 
              philly_complainant_demographics_from_open_data_philly, 
              by = "complaint_id")
-# View(philly_findings_and_demographics_from_open_data_philly)
+```
 
+```
+## Error in inner_join(philly_incidents_findings_from_open_data_philly, philly_complainant_demographics_from_open_data_philly, : object 'philly_incidents_findings_from_open_data_philly' not found
+```
+
+```r
+# View(philly_findings_and_demographics_from_open_data_philly)
 ```
 
 
 First, we analyzed the percentage of complaints filed by males with a sustained finding versus the percentage of complaints filed by males with no sustained findings as compared with the percentage of complaints filed by females with a sustained finding versus the percentage of complaints filed by females with no sustained findings. In other words, we analyzed the percentage of complaints that were sustained versus not sustained given that the complainant was a male, as compared with the percentage of complaints that were sustained versus not sustained given that the complainant was a female. As evident from the graphs below, these percentages were *nearly exactly the same* between the sexes. Therefore, the sex of the complainant does *not* seem to be correlated with whether or not the findings of a complaint were sustained. 
 
-```{r sustained and not sustained by complainant sex}
 
+```r
 # count how many sustained findings and no sustained findings per sex
 philly_findings_and_demographics_from_open_data_philly_by_sex <- 
   philly_findings_and_demographics_from_open_data_philly %>%
@@ -74,17 +109,30 @@ philly_findings_and_demographics_from_open_data_philly_by_sex <-
            (investigative_findings == "No Sustained Findings" & complainant_sex == "female")) %>%
     group_by(complainant_sex, investigative_findings) %>%
   summarize(num_in_this_category = n())
-# View(philly_findings_and_demographics_from_open_data_philly_by_sex)
-
 ```
 
-```{r graph for male complainants}
+```
+## Error in filter(., (investigative_findings == "Sustained Finding" & complainant_sex == : object 'philly_findings_and_demographics_from_open_data_philly' not found
+```
 
+```r
+# View(philly_findings_and_demographics_from_open_data_philly_by_sex)
+```
+
+
+```r
 # find the proportion of complaints with sustained finding and no sustained findings
 philly_findings_and_demographics_from_open_data_philly_male <- 
   philly_findings_and_demographics_from_open_data_philly_by_sex %>%
   filter(complainant_sex == "male") %>%
   mutate(proportion = num_in_this_category / sum(num_in_this_category))
+```
+
+```
+## Error in filter(., complainant_sex == "male"): object 'philly_findings_and_demographics_from_open_data_philly_by_sex' not found
+```
+
+```r
 # View(philly_findings_and_demographics_from_open_data_philly_male)
 
 # bar chart
@@ -100,16 +148,26 @@ philly_findings_and_demographics_from_open_data_philly_male %>%
   # title the graph
   ggtitle("Proportion of Complaints Filed by Males 
           with a Sustained Finding vs. No Sustained Findings")
-
 ```
 
-```{r graph for female complainants}
+```
+## Error in ggplot(., aes(x = investigative_findings, y = proportion)): object 'philly_findings_and_demographics_from_open_data_philly_male' not found
+```
 
+
+```r
 # find the proportion of complaints with sustained finding and no sustained findings
 philly_findings_and_demographics_from_open_data_philly_female <- 
   philly_findings_and_demographics_from_open_data_philly_by_sex %>%
   filter(complainant_sex == "female") %>%
   mutate(proportion = num_in_this_category / sum(num_in_this_category))
+```
+
+```
+## Error in filter(., complainant_sex == "female"): object 'philly_findings_and_demographics_from_open_data_philly_by_sex' not found
+```
+
+```r
 # View(philly_findings_and_demographics_from_open_data_philly_female)
 
 # bar chart
@@ -125,7 +183,10 @@ philly_findings_and_demographics_from_open_data_philly_female %>%
   # title the graph
   ggtitle("Proportion of Complaints Filed by Females 
           with a Sustained Finding vs. No Sustained Findings")
+```
 
+```
+## Error in ggplot(., aes(x = investigative_findings, y = proportion)): object 'philly_findings_and_demographics_from_open_data_philly_female' not found
 ```
 
 
@@ -142,8 +203,8 @@ Key:
 <span style="color:blue;">Filed against Male</span>  
 <span style="color:red;">Filed against Female</span>
 
-```{r sustained and not sustained by complainant sex and po sex}
 
+```r
 # count how many sustained findings and no sustained findings per sex
 philly_findings_and_demographics_from_open_data_philly_by_complainant_sex_and_po_sex <- 
   philly_findings_and_demographics_from_open_data_philly %>%
@@ -155,12 +216,18 @@ philly_findings_and_demographics_from_open_data_philly_by_complainant_sex_and_po
   group_by(complainant_sex, po_sex, investigative_findings) %>%
   summarize(num_in_this_category = n()) %>%
   drop_na(po_sex)
-# View(philly_findings_and_demographics_from_open_data_philly_by_complainant_sex_and_po_sex)
-
 ```
 
-```{r sustained and not sustained by male complainant by po sex}
+```
+## Error in group_by(., complainant_sex, investigative_findings): object 'philly_findings_and_demographics_from_open_data_philly' not found
+```
 
+```r
+# View(philly_findings_and_demographics_from_open_data_philly_by_complainant_sex_and_po_sex)
+```
+
+
+```r
 # find proportion of complaints filed by male complainants that were sustained and not sustained by po_sex
 male_complainant_and_po_sex <- 
   philly_findings_and_demographics_from_open_data_philly_by_complainant_sex_and_po_sex %>%
@@ -168,6 +235,13 @@ male_complainant_and_po_sex <-
   filter(complainant_sex == "male") %>%
   # calculate the proportion
   mutate(proportion = num_in_this_category / sum(num_in_this_category))
+```
+
+```
+## Error in filter(., complainant_sex == "male"): object 'philly_findings_and_demographics_from_open_data_philly_by_complainant_sex_and_po_sex' not found
+```
+
+```r
 # View(male_complainant_and_po_sex)
 
 male_complainant_and_po_sex %>% ggplot(aes(x = investigative_findings, y = proportion, fill = po_sex)) +
@@ -182,17 +256,27 @@ male_complainant_and_po_sex %>% ggplot(aes(x = investigative_findings, y = propo
   # title the graph
   ggtitle("Proportion of Complaints Filed by Males 
           with a Sustained Finding vs. No Sustained Findings by PO Sex")
-
 ```
 
-```{r sustained and not sustained by female complainant by po sex}
+```
+## Error in ggplot(., aes(x = investigative_findings, y = proportion, fill = po_sex)): object 'male_complainant_and_po_sex' not found
+```
 
+
+```r
 female_complainant_and_po_sex <- 
   philly_findings_and_demographics_from_open_data_philly_by_complainant_sex_and_po_sex %>%
   # keep only female complainants
   filter(complainant_sex == "female") %>%
   # calculate the proportion
   mutate(proportion = num_in_this_category / sum(num_in_this_category))
+```
+
+```
+## Error in filter(., complainant_sex == "female"): object 'philly_findings_and_demographics_from_open_data_philly_by_complainant_sex_and_po_sex' not found
+```
+
+```r
 # View(female_complainant_and_po_sex)
 
 female_complainant_and_po_sex %>% ggplot(aes(x = investigative_findings, y = proportion, fill = po_sex)) +
@@ -207,14 +291,17 @@ female_complainant_and_po_sex %>% ggplot(aes(x = investigative_findings, y = pro
   # title the graph
   ggtitle("Proportion of Complaints Filed by Females 
           with a Sustained Finding vs. No Sustained Findings by PO Sex")
+```
 
+```
+## Error in ggplot(., aes(x = investigative_findings, y = proportion, fill = po_sex)): object 'female_complainant_and_po_sex' not found
 ```
 
 
 Next, we analyzed the proportion of sustained findings filed by males as compared with the proportion of sustained findings filed by females. In other words, given that a complaint was sustained, what was the probability that the complainant was male versus female. As evident from the chart below, a complaint filed by a male seems to be more likely to be sustained than a complaint filed by a female. However, further analysis is required to determine if this finding is significant or if there is another factor, such as males filing a greater number of complaints than females, that may be the cause for this difference in proportion. 
 
-```{r sustained findings by sex}
 
+```r
 # find the proportion of sustained findings per sex
 philly_sustained_findings_per_sex <- philly_findings_and_demographics_from_open_data_philly %>%
   group_by(complainant_sex) %>%
@@ -224,6 +311,13 @@ philly_sustained_findings_per_sex <- philly_findings_and_demographics_from_open_
   summarize(num_complaints = n()) %>%
   # calculate the proportion of sustained findings by each sex
   mutate(proportion_of_sustained_findings = num_complaints / sum(num_complaints))
+```
+
+```
+## Error in group_by(., complainant_sex): object 'philly_findings_and_demographics_from_open_data_philly' not found
+```
+
+```r
 # View(philly_sustained_findings_per_sex)
 
 # pie chart
@@ -239,13 +333,16 @@ philly_sustained_findings_per_sex  %>%
                       labels = c("Female", "Male")) +
   # title the chart
   ggtitle("Percent of Complaints with Sustained Findings by Complainant Sex")
+```
 
+```
+## Error in ggplot(., aes(x = "", y = proportion_of_sustained_findings, fill = complainant_sex)): object 'philly_sustained_findings_per_sex' not found
 ```
 
 Further analysis into percentage of all complaints which were filed by males as compared with the percentage of all complaints filed by females indicated that males are more likely to file complaints than females, so the discrepancy between the proportion of complaints that are sustained which are filed by males as compared with the proportion of complaints that are sustained which are filed by females may be due to the fact that males file more complaints than females. As evident from the pie chart below, the difference in proportion between the total number of complaints filed by males versus females is nearly identical to the difference in proportion between the number of sustained complaints filed by males versus females. 
 
-```{r proportion of total complaints filed by each sex}
 
+```r
 # find the proportion of all complaints per sex
 philly_complaints_per_sex <- philly_findings_and_demographics_from_open_data_philly %>%
   group_by(complainant_sex) %>%
@@ -253,6 +350,13 @@ philly_complaints_per_sex <- philly_findings_and_demographics_from_open_data_phi
   summarize(num_complaints = n()) %>% 
   # calculate the proportion of all complaints for each sex
   mutate(proportion_of_all_findings = num_complaints / sum(num_complaints))
+```
+
+```
+## Error in group_by(., complainant_sex): object 'philly_findings_and_demographics_from_open_data_philly' not found
+```
+
+```r
 # View(philly_complaints_per_sex)
 
 # pie chart
@@ -268,7 +372,10 @@ philly_complaints_per_sex  %>%
                       labels = c("Female", "Male")) +
   # title the chart
   ggtitle("Percent of All Complaints by Complainant Sex")
+```
 
+```
+## Error in ggplot(., aes(x = "", y = proportion_of_all_findings, fill = complainant_sex)): object 'philly_complaints_per_sex' not found
 ```
 
 

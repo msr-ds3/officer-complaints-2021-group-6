@@ -28,12 +28,12 @@ theme_set(theme_bw())
 ```{r read in data}
 # read in findings data from OpenDataPhilly
 philly_incidents_findings_from_open_data_philly <- 
-  read_csv('data/philly_incidents_findings_from_open_data_philly.csv')
+  read_csv('../data/philly_incidents_findings_from_open_data_philly.csv')
 # View(philly_incidents_findings_from_open_data_philly)
 
 # read in demographics data from OpenDataPhilly
 philly_complainant_demographics_from_open_data_philly <- 
-  read_csv('data/philly_complainant_demographics_from_open_data_philly.csv')
+  read_csv('../data/philly_complainant_demographics_from_open_data_philly.csv')
 # View(philly_complainant_demographics_from_open_data_philly)
 
 ```

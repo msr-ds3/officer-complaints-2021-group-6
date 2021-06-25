@@ -29,7 +29,7 @@ theme_set(theme_bw())
 ```{r read in data}
 # read in findings data from OpenDataPhilly
 nyc_incidents <- 
-  read_csv('data/nyc_incidents.csv')
+  read_csv('../../data/nyc_incidents.csv')
 # View(nyc_incidents)
 
 ```

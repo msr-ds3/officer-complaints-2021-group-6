@@ -1,0 +1,13 @@
+name: Police_Complaints_Extension
+title: Police_Complaints_Extension
+username:
+account: sambhav101
+server: shinyapps.io
+hostUrl: https://api.shinyapps.io/v1
+appId: 4319263
+bundleId: 4756092
+url: https://sambhav101.shinyapps.io/Police_Complaints_Extension/
+when: 1624628717.05971
+lastSyncTime: 1624628717.05971
+asMultiple: FALSE
+asStatic: FALSE
