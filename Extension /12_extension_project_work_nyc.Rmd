@@ -1,0 +1,330 @@
+---
+title: "The Correlation Between Gender and Complaints Against Police Officers in NYC"
+author: "Adina Scheinfeld"
+date: "6/25/2021"
+output:
+  html_notebook: default
+  html_document:
+    toc: true
+    theme: united
+---
+
+*** 
+
+The purpose of this project was to analyze the correlation between the gender and complaints against NYC police officers. Analysis was done to compare the association between the gender of the impacted person, the gender of the offending officer, and whether impacted people of one gender were more likely to have "action" taken as a result of their complaints than people of the other gender. The category of "action" includes actions such as the officer being found guilty, the officer pleading guilty, nolo contendere, the officer being dismissed, the officer being retained with discipline, and the officer receiving training. The category of "no action" includes the officer being found not guilty, the officer being retained without discipline, and the charge being dismissed. Analysis was also done to determine whether there was a correlation between the sex of the offending officer and whether a complaint was sustained.  
+
+All data used in this project was taken from the New York Civil Liberties Union. The data include incidents that occurred from 1985-2020. However, cases in which the outcome was not specified could not be used in this analysis.  Additionally, cases that were still pending or in which the officer retired before a resolution were not included in the analysis. 
+
+<br/>
+
+##### Setup
+```{r setup}
+
+library(tidyverse)
+library(lubridate)
+library(scales)
+theme_set(theme_bw())
+
+```
+
+<br/>
+
+##### Read Data
+```{r read in data, results=FALSE}
+
+# read in findings data from OpenDataPhilly
+nyc_incidents <- 
+  read_csv('../data/nyc_incidents.csv')
+
+```
+
+<br/>
+
+##### Clean Data
+```{r clean data}
+
+# select only needed columns
+nyc_incidents_with_specific_columns <- nyc_incidents %>%
+  select(OfficerGender, NYPDDisposition, ImpactedGender) %>%
+  drop_na(NYPDDisposition)
+
+# add a column with symbol to indicate the Outcome
+# A = Action taken, N = No action taken
+nyc_incidents_with_specific_columns <- nyc_incidents_with_specific_columns %>%
+  mutate(Outcome = case_when(NYPDDisposition == "APU Closed: Previously adjudicated, with discipline" ~ "A",
+                             NYPDDisposition == "APU Closed: Retained, with discipline" ~ "A",
+                             NYPDDisposition == "APU Closed: Retained, without discipline" ~ "N",
+                             NYPDDisposition == "APU Command Discipline" ~ "A",
+                             NYPDDisposition == "APU Command Discipline B" ~ "A",
+                             NYPDDisposition == "APU Dismissed" ~ "A",
+                             NYPDDisposition == "APU Formalized Training" ~ "A",
+                             NYPDDisposition == "APU Guilty" ~ "A",
+                             NYPDDisposition == "APU Nolo contendere" ~ "A",
+                             NYPDDisposition == "APU Not guilty" ~ "N",
+                             NYPDDisposition == "APU Previously adjudicated, with discipline" ~ "A",
+                             NYPDDisposition == "No Finding" ~ "N",
+                             NYPDDisposition == "APU Retained, with discipline" ~ "A",
+                             NYPDDisposition == "Charge Dismissed - DCT" ~ "N",
+                             NYPDDisposition == "Charge Dismissed - OATH" ~ "N",
+                             NYPDDisposition == "Command Discipline - A" ~ "A",
+                             NYPDDisposition == "Command Discipline - B" ~ "A",
+                             NYPDDisposition == "Formalized Training" ~ "A",
+                             NYPDDisposition == "Guilty - DCT" ~ "A",
+                             NYPDDisposition == "Negttn-Guilty" ~ "A",
+                             NYPDDisposition == "Negttn-Nolo contendre" ~ "A",
+                             NYPDDisposition == "No Disciplinary Action-DUP" ~ "N",
+                             NYPDDisposition == "No Disciplinary Action-SOL" ~ "N",
+                             NYPDDisposition == "Not Guilty - DCT" ~ "N",
+                             NYPDDisposition == "Plead Guilty - DCT" ~ "A",
+                             NYPDDisposition == "Plead Guilty - OATH" ~ "A")) %>%
+  # remove cases in which the outcome is not specified
+  drop_na(Outcome)
+
+```
+
+
+First, we analyzed the percentage of cases by impacted males for which action was taken versus the percentage of cases by impacted males for which no action was taken as compared with  the percentage of cases by impacted females for which action was taken versus the percentage of cases by impacted females for which no action was taken. In other words, we analyzed the percentage of cases for which action was taken versus the percentage of cases for which no action was taken, given that the impacted person was a male, as compared with the percentage of cases for which action was taken versus the percentage of cases for which no action was taken, given that the impacted person was a female. Based on the graphs below, it seems that action was more likely to be taken for cases opened by females than for cases opened by males. Pearsons Chi-squared test was run to determine whether this difference was statistically significant. The result of the Chi-squared test was 0.0003701 which indicates, at a significance level of 0.05, that the gender of the impacted person and whether or not action was taken are not independent of each other. 
+
+```{r action taken vs no action taken by gender, include=FALSE}
+
+# count how many complaints had action taken for them vs no action taken, by impacted gender
+nyc_incidents_by_impacted_gender <- nyc_incidents_with_specific_columns %>%
+  filter((Outcome == "A" & ImpactedGender == "Male") |
+           (Outcome == "A" & ImpactedGender == "Female") |
+           (Outcome == "N" & ImpactedGender == "Male") |
+           (Outcome == "N" & ImpactedGender == "Female")) %>%
+  group_by(ImpactedGender, Outcome) %>%
+  summarize(num_in_this_category = n())
+
+```
+
+```{r graph for impacted males}
+
+# find the proportion of impacted males with action taken vs no action taken
+nyc_incidents_by_impacted_males <- nyc_incidents_by_impacted_gender %>%
+  filter(ImpactedGender == "Male") %>%
+  mutate(proportion_of_impacted_males = num_in_this_category / sum(num_in_this_category))
+
+# bar chart
+nyc_incidents_by_impacted_males %>%
+  ggplot(aes(x = Outcome, y = proportion_of_impacted_males)) +
+  geom_bar(stat = "identity", fill = c("green", "red")) +
+  # label each bar with the percentage
+  geom_text(aes(label = percent(proportion_of_impacted_males)), position = position_stack(vjust = 1.1)) +
+  # label y axis and set the y axis labels to be percents
+  scale_y_continuous("Percent of All Complaints Filed by Males", labels = percent) +
+  # label x axis and label each bar
+  scale_x_discrete("Outcome", labels = c("Action", "No Action")) +
+  # title the graph
+  ggtitle("Proportion of Impacted Males for which Action was Taken 
+          vs. Those with No Action Taken")
+
+```
+
+```{r graph for impacted females}
+
+# find the proportion of impacted males with action taken vs no action taken
+nyc_incidents_by_impacted_females <- nyc_incidents_by_impacted_gender %>%
+  filter(ImpactedGender == "Female") %>%
+  mutate(proportion_of_impacted_females = num_in_this_category / sum(num_in_this_category))
+
+# bar chart
+nyc_incidents_by_impacted_females %>%
+  ggplot(aes(x = Outcome, y = proportion_of_impacted_females)) +
+  geom_bar(stat = "identity", fill = c("green", "red")) +
+  # label each bar with the percentage
+  geom_text(aes(label = percent(proportion_of_impacted_females)), position = position_stack(vjust = 1.1)) +
+  # label y axis and set the y axis labels to be percents
+  scale_y_continuous("Percent of All Complaints Filed by Females", labels = percent) +
+  # label x axis and label each bar
+  scale_x_discrete("Outcome", labels = c("Action", "No Action")) +
+  # title the graph
+  ggtitle("Proportion of Impacted Females for which Action was Taken 
+          vs. Those with No Action Taken")
+
+```
+
+```{r chi squared test}
+
+# create dataframe with genders and outcomes
+nyc_incidents_with_counts_of_genders <- nyc_incidents_with_specific_columns %>% 
+  filter(ImpactedGender == "Male" | ImpactedGender == "Female")
+
+# make a table with genders and counts to indicate whether or not action was taken
+nyc_incidents_with_counts_of_genders_table <- 
+  table(nyc_incidents_with_counts_of_genders$ImpactedGender, nyc_incidents_with_counts_of_genders$Outcome)
+
+# nyc_incidents_with_counts_of_genders_table
+
+# run chi-squared test
+chisq.test(nyc_incidents_with_counts_of_genders_table)
+
+```
+
+
+
+Next, we analyzed the proportion of cases for impacted people of each gender with action versus no action divided also by the gender of the offending officer. Although there are slight differences between males and females, the differences do not appear to be statistically significant.
+
+------          | Action Taken           | No Action Taken
+--------------- | :--------------------: | :---------------------
+Impacted Male   | <span style="color:blue;">59.64%</span> | <span style="color:blue;">40.36%</span>
+Impacted Male   | <span style="color:red;">60.63%</span>  | <span style="color:red;">39.37%</span>
+Impacted Female | <span style="color:blue;">64.7%</span>  | <span style="color:blue;">35.3%</span>
+Impacted Female | <span style="color:red;">67.0%</span>   | <span style="color:red;">33.0%</span>
+
+Key:  
+<span style="color:blue;">Filed against Male Officer</span>  
+<span style="color:red;">Filed against Female Officer</span>
+
+```{r action and no action by impacted gender and officer gender, include=FALSE}
+
+# count how many complaints resulted in action vs no action per gender
+nyc_incidents_by_impacted_gender_and_officer_gender <- 
+  nyc_incidents_with_specific_columns %>%
+  group_by(ImpactedGender, Outcome) %>%
+  filter((Outcome == "A" & ImpactedGender == "Male") |
+           (Outcome == "A" & ImpactedGender == "Female") |
+           (Outcome == "N" & ImpactedGender == "Male") |
+           (Outcome == "N" & ImpactedGender == "Female")) %>%
+  group_by(ImpactedGender, OfficerGender, Outcome) %>%
+  summarize(num_in_this_category = n())
+
+```
+
+```{r action taken vs no action taken for impacted males by officer gender}
+
+# find proportion of complaints by impacted males with action vs no action by officer gender
+impacted_male_and_officer_gender <- 
+  nyc_incidents_by_impacted_gender_and_officer_gender %>%
+  # keep only male complainants
+  filter(ImpactedGender == "Male") %>%
+  # calculate the proportion
+  mutate(proportion_in_this_category = num_in_this_category / sum(num_in_this_category))
+
+# bar chart
+impacted_male_and_officer_gender %>% ggplot(aes(x = Outcome, 
+                                                y = proportion_in_this_category, 
+                                                fill = OfficerGender)) +
+  geom_bar(stat = "identity", position = "dodge") +
+  # label each bar with the percentage
+  geom_text(aes(label = percent(proportion_in_this_category)), 
+            position = position_dodge(width = 0.9), vjust = -0.5) +
+  # set the y axis labels to be percents
+  scale_y_continuous("Percent of Impacted Males", labels = percent) +
+  # label the x axis
+  scale_x_discrete("Outcome", labels = c("Action", "No Action")) +
+  scale_fill_discrete("Officer Gender", labels = c("Female", "Male")) +
+  # title the graph
+  ggtitle("Proportion of Impacted Males for which Action was Taken 
+          versus Those for which No Action was Taken by Officer Gender")
+
+```
+
+```{r action taken vs no action taken for impacted females by officer gender}
+
+# find proportion of complaints by impacted females with action vs no action by officer gender
+impacted_female_and_officer_gender <- 
+  nyc_incidents_by_impacted_gender_and_officer_gender %>%
+  # keep only female complainants
+  filter(ImpactedGender == "Female") %>%
+  # calculate the proportion
+  mutate(proportion_in_this_category = num_in_this_category / sum(num_in_this_category))
+
+# bar chart
+impacted_female_and_officer_gender %>% ggplot(aes(x = Outcome, 
+                                                y = proportion_in_this_category, 
+                                                fill = OfficerGender)) +
+  geom_bar(stat = "identity", position = "dodge") +
+  # label each bar with the percentage
+  geom_text(aes(label = percent(proportion_in_this_category)), 
+            position = position_dodge(width = 0.9), vjust = -0.5) +
+  # set the y axis labels to be percents
+  scale_y_continuous("Percent of Impacted Females", labels = percent) +
+  # label the x axis
+  scale_x_discrete("Outcome", labels = c("Action", "No Action")) +
+  scale_fill_discrete("Officer Gender", labels = c("Female", "Male")) +
+  # title the graph
+  ggtitle("Proportion of Impacted Females for which Action was Taken 
+          versus Those for which No Action was Taken by Officer Gender")
+
+```
+
+
+Next, we analyzed the proportion cases in which action was taken for impacted males as compared with the proportion of cases in which action was taken for impacted females. In other words, given that action was taken, what was the probability that the impacted person was male versus female. As evident from the pie chart below, it seems that action was more likely to be taken for an impacted male than for an impacted female. However, further analysis is required to determine if this finding is significant or if there is another factor, such as males opening more cases than females, that may account for this difference in proportion. 
+
+```{r action vs no action by gender}
+
+# find the proportion of action vs no action by gender
+nyc_action_per_gender <- nyc_incidents_with_specific_columns %>%
+  group_by(ImpactedGender) %>%
+  # keep only impacted people for which action was taken
+  filter(Outcome == "A") %>%
+  mutate(ImpactedGender = case_when((ImpactedGender == "Male" ~ "Male"), 
+                                    (ImpactedGender == "Female" ~ "Female"), 
+                                    (is.na(ImpactedGender) | 
+                                       ImpactedGender != "Male" & ImpactedGender != "Female") ~ "NA")) %>%
+  # count the number of outcomes with action per gender
+  summarize(num_complaints = n()) %>%
+  # calculate the proportion of outcomes with action by each sex
+  mutate(proportion_of_sustained_findings = num_complaints / sum(num_complaints))
+
+
+# pie chart
+nyc_action_per_gender  %>% 
+  ggplot(aes(x = "", y = proportion_of_sustained_findings, fill = ImpactedGender)) +
+  geom_bar(stat = "identity", width = 1, color = "white") +
+  coord_polar("y", start = 0) +
+  # label each segment in the chart
+  geom_text(aes(label = percent(proportion_of_sustained_findings)), position = position_stack(vjust = 0.6)) +
+  theme_void() +
+  # set the key
+  scale_fill_discrete("Impacted Gender",
+                      labels = c("Female", "Male")) +
+  # title the chart
+  ggtitle("Percent of Outcomes That Resulted in Action by Impacted Gender")
+
+```
+
+Further analysis into percentage of all cases opened by males as compared with the percentage of all cases opened by females indicated that males are significantly more likely to file complaints than females, so the discrepancy between the proportion of cases in which action was taken for impacted males as compared with the proportion of cases in which action was taken for impacted females may be due to the fact that males open more cases than females. As evident from the pie chart below, the difference in proportion between the total number of cases opened by males versus females is nearly identical to the difference in proportion between the number of cases for which action was taken for impacted males versus impacted females. 
+
+```{r proportion of total impacts by gender}
+
+# find the proportion of all impacts per gender
+nyc_impacts_per_gender <- nyc_incidents_with_specific_columns %>%
+  group_by(ImpactedGender) %>%
+    mutate(ImpactedGender = case_when((ImpactedGender == "Male" ~ "Male"), 
+                                    (ImpactedGender == "Female" ~ "Female"), 
+                                    (is.na(ImpactedGender) | 
+                                       ImpactedGender != "Male" & ImpactedGender != "Female") ~ "NA")) %>%
+  # count the number of all impacts per gender
+  summarize(num_complaints = n()) %>% 
+  # calculate the proportion of all impacts per gender
+  mutate(proportion_of_all_findings = num_complaints / sum(num_complaints))
+
+
+# pie chart
+nyc_impacts_per_gender  %>% 
+  ggplot(aes(x = "", y = proportion_of_all_findings, fill = ImpactedGender)) +
+  geom_bar(stat = "identity", width = 1, color = "white") +
+  coord_polar("y", start = 0) +
+  # label each segment in the chart
+  geom_text(aes(label = percent(proportion_of_all_findings)), position = position_stack(vjust = 0.6)) +
+  theme_void() +
+  # set the key
+  scale_fill_discrete("ImpactedGender",
+                      labels = c("Female", "Male")) +
+  # title the chart
+  ggtitle("Percent of All Impacts by Impacted Gender")
+
+```
+
+
+
+
+
+
+
+
+
+
+
